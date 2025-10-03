@@ -7,5 +7,6 @@ namespace Comandas.Api.Models
         public int Id { get; set; }
         public int ComandaItemId { get; set; }
         public List<PedidoCozinhaItem> Itens { get; set; } = [];
+        public int Comanda { get; internal set; }
     }
 }

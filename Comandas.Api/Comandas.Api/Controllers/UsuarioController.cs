@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Comandas.Api.Models;
+using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -8,24 +9,56 @@ namespace Comandas.Api.Controllers
     [ApiController]
     public class UsuarioController : ControllerBase
     {
+        //Lista Usuarios 
+      static List<Usuario> usuarios = new List<Usuario>()
+{
+         new Usuario
+        {
+          Id = 1,
+          Nome = "Admin",
+          Email = "admin@admin.com",
+          Senha = "admin123"
+         },
+          new Usuario
+            {
+             Id = 2,
+            Nome = "Admin",
+            Email = "admin@admin.com",
+            Senha = "admin123"
+            }
+        };
+
+
         // GET: api/<UsuarioController>
         [HttpGet]
-        public IEnumerable<string> Get()
+        public IResult Get()
         {
-            return new string[] { "value1", "value2" };
+            return Results.Ok(usuarios);
         }
+
 
         // GET api/<UsuarioController>/5
         [HttpGet("{id}")]
-        public string Get(int id)
+        public IResult Get(int id)
         {
-            return "value";
+            var usuario = usuarios.FirstOrDefault(u => u.Id == id);
+            if (usuario is null)
+            {
+                return Results.NotFound("Usuário não encontrado!");
+            }
+            return Results.Ok(usuario);
         }
 
         // POST api/<UsuarioController>
         [HttpPost]
-        public void Post([FromBody] string value)
+        public IResult Post([FromBody] Usuario usuario)
         {
+            //adiciona o usuario na lista
+            usuarios.Add(usuario);
+
+           return Results.Created($"/api/usuario/{usuario.Id}", usuario);
+            //CreatedAtAction(nameof(Get), new { id = usuario.Id }, usuario);
+            //retorna o usuario criad
         }
 
         // PUT api/<UsuarioController>/5

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Comandas.Api.Models;
+using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -8,18 +9,39 @@ namespace Comandas.Api.Controllers
     [ApiController]
     public class ComandaController : ControllerBase
     {
+        List<Comanda> comandas = new List<Comanda>()
+        {
+           new Comanda
+           {
+               Id = 1,
+               NomeCliente = "Kainã Habekost",
+               NumeroMesa = 1,
+
+           },
+           new Comanda
+           {
+               Id = 2,
+               NomeCliente = "Ana Clara",
+               NumeroMesa = 2,
+            }
+        };
         // GET: api/<ComandaController>
         [HttpGet]
-        public IEnumerable<string> Get()
+        public IResult Get()
         {
-            return new string[] { "value1", "value2" };
+            return Results.Ok(comandas);
         }
 
         // GET api/<ComandaController>/5
         [HttpGet("{id}")]
-        public string Get(int id)
+        public IResult Get(int id)
         {
-            return "value";
+            var comanda = comandas.FirstOrDefault(c => c.Id == id);
+            if (comanda is null)
+            {
+                return Results.NotFound("Comanda não encontrada!");
+            }
+            return Results.Ok(comanda) ;
         }
 
         // POST api/<ComandaController>
