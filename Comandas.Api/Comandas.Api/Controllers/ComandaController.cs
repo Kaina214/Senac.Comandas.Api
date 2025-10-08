@@ -1,4 +1,5 @@
-﻿using Comandas.Api.Models;
+﻿using Comandas.Api.DTOs;
+using Comandas.Api.Models;
 using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -46,7 +47,7 @@ namespace Comandas.Api.Controllers
 
         // POST api/<ComandaController>
         [HttpPost]
-        public void Post([FromBody] string value)
+        public IResult Post([FromBody] ComandaCreateRequest comandaCreate)
         {
         }
 
