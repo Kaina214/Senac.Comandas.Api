@@ -84,11 +84,27 @@ namespace Comandas.Api.Controllers
             //CreatedAtAction(nameof(Get), new { id = usuario.Id }, usuario);
             //retorna o usuario criad
         }
-
+        /// <summary>
+        /// Atualiza um usuário existente
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="usuarioUpdate"></param>
+        /// <returns></returns>
+        //ATUALIZA UM USUARIO
         // PUT api/<UsuarioController>/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] UsuarioUpdateRequest usuarioUpdate)
+        public IResult Put(int id, [FromBody] UsuarioUpdateRequest usuarioUpdate)
         {
+            var usuario = usuarios.
+                FirstOrDefault(u => u.Id == id);
+            if (usuario is null)
+                return Results.NotFound($"Usuário do id {id} não encontrado");//404
+            //Atualiza os dados do usuario
+            usuario.Nome = usuarioUpdate.Nome;
+            usuario.Email = usuarioUpdate.Email;
+            usuario.Senha = usuarioUpdate.Senha;
+            //Retorna sem conteudova
+            return Results.NoContent();//204
         }
 
         // DELETE api/<UsuarioController>/5
