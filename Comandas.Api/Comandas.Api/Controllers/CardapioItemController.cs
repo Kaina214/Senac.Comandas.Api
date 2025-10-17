@@ -11,7 +11,7 @@ namespace Comandas.Api.Controllers
     [ApiController]//Define que essa classe é um controlador de API
     public class CardapioItemController : ControllerBase
     {
-        private List<CardapioItem> cardapios = new List<CardapioItem>() // Ensure this is a field, not a local variable
+        static List<CardapioItem> cardapios = new List<CardapioItem>() // Ensure this is a field, not a local variable
         {
             new CardapioItem
             {
@@ -90,12 +90,19 @@ namespace Comandas.Api.Controllers
         [HttpDelete("{id}")]
         public IResult Delete(int id)
         {
-            var cardapioItem = cardapios.FirstOrDefault(c => c.Id == id);
+            //buscar o cardapio da lista pelo id
+            var cardapioItem = cardapios
+                .FirstOrDefault(c => c.Id == id);
+            // se tiver nulo, retorna 404
             if (cardapioItem is null)
                 return Results.NotFound($"Cardápio {id} não encontrado!");
-
-            cardapios.Remove(cardapioItem);
+            //remove o objeto cardapio da lista
+          var removido =  cardapios.Remove(cardapioItem);
+            //retornar 204 sem conteudo
+            if(removido)
             return Results.NoContent();
+
+            return Results.StatusCode(500);
         }
     }
 }

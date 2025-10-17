@@ -104,6 +104,7 @@ namespace Comandas.Api.Controllers
         public IResult Put(int id, [FromBody] ComandaUpdateRequest comandaUpdate)
         {
             var comanda = comandas.FirstOrDefault(c => c.Id == id);
+            
             if (comanda is null)
 
                 return Results.NotFound("Comanda não encontrada!");
@@ -123,8 +124,22 @@ namespace Comandas.Api.Controllers
 
         // DELETE api/<ComandaController>/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public IResult Delete(int id)
         {
+            //pesquisa uma comanda na lista de comandas pelo id da comanda
+            //que veio no parametro da request
+            var comanda = comandas.FirstOrDefault(c => c.Id == id);
+            // se não encontra a comanda pesquisada
+            if (comanda is null)
+                //retorna um código 404 not found não encontrado
+            return Results.NotFound("Comanda não encontrada!");
+            //remove a comanda da lista de comandas
+            var removidoComSucesso = comandas.Remove(comanda);
+          
+            if(removidoComSucesso)
+                // retorna 204 sem conteudo
+                return Results.NoContent();
+            return Results.StatusCode(500);
         }
     }
 }

@@ -10,7 +10,7 @@ namespace Comandas.Api.Controllers
     [ApiController]
     public class MesaController : ControllerBase
     {
-        private static List<Comanda> mesas = new List<Comanda>();
+         static List<Comanda> mesas = new List<Comanda>();
 
         // GET: api/<MesaController>
         [HttpGet]
@@ -75,9 +75,12 @@ namespace Comandas.Api.Controllers
             var mesa = mesas.FirstOrDefault(m => m.Id == id);
             if (mesa is null)
                 return Results.NotFound($"Mesa do id {id} não encontrada");
-
-            mesas.Remove(mesa);
+            var removido = mesas.Remove(mesa);
+            if(removido)
             return Results.NoContent();
+            return Results.StatusCode(500);
+           
+           
         }
     }
 }
