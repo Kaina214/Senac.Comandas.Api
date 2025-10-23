@@ -10,7 +10,7 @@ namespace Comandas.Api.Controllers
     [ApiController]
     public class ReservasController : ControllerBase
     {
-        private readonly ComandasDbContext _context;//_context é local por isso o `_
+        private readonly ComandasDbContext _context;//_context é local por isso o "_"
 
         public ReservasController(ComandasDbContext context)
         {

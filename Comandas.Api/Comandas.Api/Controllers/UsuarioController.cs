@@ -10,30 +10,21 @@ namespace Comandas.Api.Controllers
     [ApiController]
     public class UsuarioController : ControllerBase
     {
-        //Lista Usuarios 
-      static List<Usuario> usuarios = new List<Usuario>()
-{
-         new Usuario
+        //variavel que represeenta o banco de dados
+        public ComandasDbContext _context { get; set; }
+        //construtor
+        public UsuarioController(ComandasDbContext context)
         {
-          Id = 1,
-          Nome = "Admin",
-          Email = "admin@admin.com",
-          Senha = "admin123"
-         },
-          new Usuario
-            {
-             Id = 2,
-            Nome = "Admin",
-            Email = "admin@admin.com",
-            Senha = "admin123"
-            }
-        };
-
-
+            _context = context;
+        }
+    
+        //iresult que retorna  a lista de usuarios
         // GET: api/<UsuarioController>
         [HttpGet]
         public IResult Get()
-        {
+        {   //conectar no banco 
+            //executar a consulta SELECT * FROM usuarios
+            var usuarios = _context.Usuarios.ToList();
             return Results.Ok(usuarios);
         }
 
@@ -42,7 +33,8 @@ namespace Comandas.Api.Controllers
         [HttpGet("{id}")]
         public IResult Get(int id)
         {
-            var usuario = usuarios.FirstOrDefault(u => u.Id == id);
+            var usuario = _context.Usuarios.
+                FirstOrDefault(u => u.Id == id);
             if (usuario is null)
             {
                 return Results.NotFound("Usuário não encontrado!");
@@ -72,15 +64,18 @@ namespace Comandas.Api.Controllers
             //cria um novo usuario
             var usuario = new Usuario
             {
-                Id = usuarios.Count + 1,
+            
                 Nome = usuarioCreate.Nome,
                 Email = usuarioCreate.Email,
                 Senha = usuarioCreate.Senha
             };
             //adiciona o usuario na lista
-            usuarios.Add(usuario);
+            _context.Usuarios.Add(usuario);
 
-           return Results.Created($"/api/usuario/{usuario.Id}", usuario);
+            // EXECUTA o INSERT INTO Usuarios (Id , Nome, Email, Senha) VALUES (...)
+            _context.SaveChanges();//serve para salvar as alterações no banco de dados
+
+            return Results.Created($"/api/usuario/{usuario.Id}", usuario);
             //CreatedAtAction(nameof(Get), new { id = usuario.Id }, usuario);
             //retorna o usuario criad
         }
@@ -95,7 +90,7 @@ namespace Comandas.Api.Controllers
         [HttpPut("{id}")]
         public IResult Put(int id, [FromBody] UsuarioUpdateRequest usuarioUpdate)
         {
-            var usuario = usuarios.
+            var usuario = _context.Usuarios.
                 FirstOrDefault(u => u.Id == id);
             if (usuario is null)
                 return Results.NotFound($"Usuário do id {id} não encontrado");//404
@@ -103,7 +98,10 @@ namespace Comandas.Api.Controllers
             usuario.Nome = usuarioUpdate.Nome;
             usuario.Email = usuarioUpdate.Email;
             usuario.Senha = usuarioUpdate.Senha;
-            //Retorna sem conteudova
+
+            //update no banco de dados
+            _context.SaveChanges();
+            //Retorna sem content
             return Results.NoContent();//204
         }
 
@@ -111,16 +109,20 @@ namespace Comandas.Api.Controllers
         [HttpDelete("{id}")]
         public IResult Delete(int id)
         {
-            var usuario = usuarios.FirstOrDefault(u => u.Id == id);
+            var usuario = _context.Usuarios.
+                FirstOrDefault(u => u.Id == id);
             if (usuario is null)
 
                 return Results.NotFound($"usuario{id}não encontrado!");
-            var removido = usuarios.Remove(usuario);
+            _context.Usuarios.Remove(usuario);
+            var removido = _context.SaveChanges();
+            if (removido > 0)
+            {
+                return Results.NoContent();
+            }
+           return Results.StatusCode(500);
 
-            if(removido)
-            return Results.NoContent(); 
 
-            return Results.StatusCode(500);
         }
     }
 }
