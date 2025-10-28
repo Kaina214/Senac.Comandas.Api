@@ -9,24 +9,18 @@ namespace Comandas.Api.Controllers
     [ApiController]
     public class PedidoCozinhaController : ControllerBase
     {
-       static List<PedidoCozinha> pedidos = new List<PedidoCozinha>()
+       public ComandasDbContext _context { get; set; }
+
+        public PedidoCozinhaController(ComandasDbContext context)
         {
-           new PedidoCozinha
-           {
-               Id = 1,
-               ComandaItemId = 1,
-           },
-              new PedidoCozinha
-              {
-                Id = 2,
-                ComandaItemId = 2,
-               }
-        };
+            _context = context;
+        }
 
         // GET: api/<PedidoCozinhaController>
         [HttpGet]
         public IResult Get()
         {
+           var pedidos = _context.PedidoCozinhas.ToList();
             return Results.Ok(pedidos);
         }
 
@@ -34,7 +28,8 @@ namespace Comandas.Api.Controllers
         [HttpGet("{id}")]
         public IResult Get(int id)
         {
-            var PedidoCozinha = pedidos.FirstOrDefault(p => p.Id == id);
+            var PedidoCozinha = _context.PedidoCozinhas.
+                FirstOrDefault(p => p.Id == id);
             if (PedidoCozinha is null)
             {
                 return Results.NotFound("Pedido não encontrado!");
@@ -58,15 +53,17 @@ namespace Comandas.Api.Controllers
         [HttpDelete("{id}")]
         public IResult Delete(int id)
         {
-            var PedidoCozinha = pedidos.
+            var PedidoCozinha = _context.PedidoCozinhas.
                 FirstOrDefault(p => p.Id == id);
 
             if (PedidoCozinha is null)
                 return Results.NotFound($"Pedido {id} não encontrado!");
-
-            var  removido = pedidos.Remove(PedidoCozinha);
-            if(removido)
+            _context.PedidoCozinhas.Remove(PedidoCozinha);
+            var removido = _context.SaveChanges();
+            if (removido > 0)
+            {
                 return Results.NoContent();
+            }
             return Results.StatusCode(500);
 
 

@@ -11,7 +11,7 @@ namespace Comandas.Api.Controllers
     public class ReservasController : ControllerBase
     {
         private readonly ComandasDbContext _context;//_context é local por isso o "_"
-
+        
         public ReservasController(ComandasDbContext context)
         {
             _context = context;
