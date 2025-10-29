@@ -39,8 +39,9 @@ namespace Comandas.Api.Controllers
 
         // POST api/<PedidoCozinhaController>
         [HttpPost]
-        public void Post([FromBody] string value)
+        public IResult Post([FromBody] PedidoCozinhaCreateRequest pedido)
         {
+            
         }
 
         // PUT api/<PedidoCozinhaController>/5

@@ -20,19 +20,28 @@ namespace Comandas.Api.Controllers
 
         // GET: api/<MesaController>
         [HttpGet]
-        public IEnumerable<string> Get()
+        public IResult Get()
         {
-            return new string[] { "value1", "value2" };
+           var mesas = _context.Mesas.ToList();
+            return Results.Ok(mesas);
         }
 
         // GET api/<MesaController>/5
         [HttpGet("{id}")]
-        public string Get(int id)
+        public  IResult Get(int id)
         {
-            return "value";
+           var mesa = _context.Mesas.
+                FirstOrDefault(m => m.Id == id);
+            if (mesa is null)
+            {
+                return Results.NotFound("Mesa não encontrada!");
+            }
+            return Results.Ok(mesa);
         }
 
-        // Fix the error by ensuring the correct type "Mesa" is used instead of "Comanda" when creating a new Mesa entity.
+        // The issue arises because the code is trying to add an object of type `Comanda` to the `Mesas` DbSet, which expects objects of type `Mesa`.
+        // To fix this, the object `novaMesa` should be of type `Mesa` instead of `Comanda`.
+
         [HttpPost]
         public IResult Post([FromBody] MesaCreateRequest mesaCreate)
         {
@@ -41,14 +50,14 @@ namespace Comandas.Api.Controllers
             if (mesaCreate.SituacaoMesa < 0 || mesaCreate.SituacaoMesa > 2)
                 return Results.BadRequest("A situação da mesa deve ser 0 (livre), 1 (ocupada) ou 2 (reservada).");
 
-            // Create a new Mesa entity instead of Comanda
+            // Create a new Mesa object instead of Comanda
             var novaMesa = new Mesa
             {
                 NumeroMesa = mesaCreate.NumeroMesa,
                 SituacaoMesa = mesaCreate.SituacaoMesa
             };
 
-            _context.Mesas.Add(novaMesa);
+            _context.Mesas.Add(novaMesa); // Add the Mesa object to the Mesas DbSet
             _context.SaveChanges();
             return Results.Created($"/api/mesa/{novaMesa.Id}", novaMesa);
         }

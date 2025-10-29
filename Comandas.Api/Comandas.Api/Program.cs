@@ -5,7 +5,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddDbContext<ComandasDbContext>(options=>
-    options.UseInMemoryDatabase("ComandasDb")
+    options.UseSqlite("Data Source=comandas.db ")
 );
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
