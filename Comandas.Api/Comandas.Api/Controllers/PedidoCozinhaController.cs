@@ -37,12 +37,7 @@ namespace Comandas.Api.Controllers
             return Results.Ok(PedidoCozinha);
         }
 
-        // POST api/<PedidoCozinhaController>
-        [HttpPost]
-        public IResult Post([FromBody] PedidoCozinhaCreateRequest pedido)
-        {
-            
-        }
+       
 
         // PUT api/<PedidoCozinhaController>/5
         [HttpPut("{id}")]

@@ -55,24 +55,41 @@ namespace Comandas.Api.Controllers
                 NumeroMesa = comandaCreate.NumeroMesa,
             };
              var comandaItens = new List<ComandaItem>();
-            foreach (int cardapioItemId  in comandaCreate.CardapioItemIds)
+            foreach (int cardapioItemId in comandaCreate.CardapioItemIds)
             {
                 var comandaItem = new ComandaItem
                 {
-                    
+
                     CardapioItemId = cardapioItemId,
                     Comanda = novaComanda,
                 };
                 // adiciona o item à lista de itens 
                 comandaItens.Add(comandaItem);
                 //Criar o pedido de coainha e o item de acordo com o cadastro do cardapio possuipreparo
-               var cardapioItem = _context.CardapioItens.
-                    FirstOrDefault(ci => ci.Id == cardapioItemId);
+                var cardapioItem = _context.CardapioItens.
+                     FirstOrDefault(ci => ci.Id == cardapioItemId);
+                if (cardapioItem!.PossuiPreparo)
+                {
+                    var pedido = new PedidoCozinha
+                    {
+                        Comanda = novaComanda,
 
-              //  novaComanda.Itens = comandaItens;
-                //_context.Comandas.Add(novaComanda);
+                    };
+                    var pedidoItem = new PedidoCozinhaItem
+                    {
+                        ComandaItem = comandaItem,
+                        PedidoCozinha = pedido
+                    };
+                    _context.PedidoCozinhas.Add(pedido);
+                    _context.PedidoCozinhaItens.Add(pedidoItem);
+                }
+            
+                novaComanda.Itens = comandaItens;
+                _context.Comandas.Add(novaComanda);
+                _context.SaveChanges();
+                return Results.Created($"/api/comanda/{novaComanda.Id}", novaComanda);
 
-                
+
             }
 
           
