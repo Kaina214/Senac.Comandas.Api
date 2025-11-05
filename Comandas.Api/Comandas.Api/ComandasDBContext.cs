@@ -55,6 +55,22 @@ namespace Comandas.Api
                         Descricao = "Coxinha de frango com catupiry",
                         Preco = 6.50M,
                         PossuiPreparo = true
+                    },
+                    new CardapioItem
+                    {
+                        Id = 2,
+                        Titulo = "Pizza",
+                        Descricao = "Uma fatia de Pizza de bacon ",
+                        Preco = 12.50M,
+                        PossuiPreparo = true
+                    },
+                    new CardapioItem
+                    {
+                        Id = 3,
+                        Titulo = "Pastel",
+                        Descricao = "Pastel de frango com catupiry",
+                        Preco = 8.50M,
+                        PossuiPreparo = true
                     }
             ));
 
