@@ -26,26 +26,28 @@ namespace Comandas.Api
             );
 
             modelBuilder.Entity<Mesa>()
-                .HasData(
+                .HasData
+              (
 
-                new Mesa
+                new Models.Mesa()
                 {
                     Id = 1,
                     NumeroMesa = 1,
                     SituacaoMesa = 0
                 },
-                new Mesa
+                new Models.Mesa()
                 {
                     Id = 2,
                     NumeroMesa = 2,
-                    SituacaoMesa = 0
+                    SituacaoMesa = 0,
                 },
-                new Mesa
+                new Models.Mesa()
                 {
                     Id = 3,
                     NumeroMesa = 3,
                     SituacaoMesa = 0
-                },
+                }
+              );
                 modelBuilder.Entity<CardapioItem>()
                 .HasData(
                     new CardapioItem
@@ -72,7 +74,7 @@ namespace Comandas.Api
                         Preco = 8.50M,
                         PossuiPreparo = true
                     }
-            ));
+                );
 
             base.OnModelCreating(modelBuilder);
         }
