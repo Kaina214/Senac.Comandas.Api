@@ -11,8 +11,8 @@ namespace Comandas.Api.DTOs
     }
     public class ComandaItemResponse
     {
-        public int Id { get;set }
-        public string Titulo { get; set } = default;
+        public int Id { get; set; }
+        public string Titulo { get; set; } = default;
     }
 
 }

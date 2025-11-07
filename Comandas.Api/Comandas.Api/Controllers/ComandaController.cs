@@ -1,4 +1,5 @@
-﻿using Comandas.Api.DTOs;
+﻿using Azure;
+using Comandas.Api.DTOs;
 using Comandas.Api.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -89,26 +90,25 @@ namespace Comandas.Api.Controllers
                 _context.SaveChanges();
 
 
-                var response = new ComandaCreateResponse
-                {
-                    Id = novaComanda.Id,
-                    NomeCliente = novaComanda.NomeCliente,
-                    NumeroMesa = novaComanda.NumeroMesa,
-                    Itens = novaComanda.Itens.Select(i => new ComandaItemResponse
-                    {
-                        Id = i.Id,
-                        Titulo = _context.CardapioItens.First(ci => ci.Id == i.CardapioItemId).Titulo
-
-                    }).ToList()
-
-
-                };
-                return Results.Created($"/api/comanda/{response.Id}", response);
-
+               
             }
+            var response = new ComandaCreateResponse
+            {
+                Id = novaComanda.Id,
+                NomeCliente = novaComanda.NomeCliente,
+                NumeroMesa = novaComanda.NumeroMesa,
+                Itens = novaComanda.Itens.Select(i => new ComandaItemResponse
+                {
+                    Id = i.Id,
+                    Titulo = _context.CardapioItens.First(ci => ci.Id == i.CardapioItemId).Titulo
+
+                }).ToList()
 
 
-            // PUT api/<ComandaController>/5
+            };
+            return Results.Created($"/api/comanda/{response.Id}", response);
+        }
+        // PUT api/<ComandaController>/5
             [HttpPut("{id}")]
             public IResult Put(int id, [FromBody] ComandaUpdateRequest comandaUpdate)
             {
@@ -146,6 +146,6 @@ namespace Comandas.Api.Controllers
                 }
                 return Results.StatusCode(500);
             }
-        }
+        
     }
 }
