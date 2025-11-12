@@ -47,8 +47,8 @@ namespace Comandas.Api.Controllers
         {
             if (comandaCreate.NomeCliente.Length < 3)
                 return Results.BadRequest("O nome do cliente deve ter no mínimo 3 caracteres.");
-            if (comandaCreate.NumeroMesa <= 3)
-                return Results.BadRequest("O número da mesa deve ter no mínimo 3 caracteres.");
+            if (comandaCreate.NumeroMesa <= 0)
+                return Results.BadRequest("O número da mesa nao pode ser zero");
             var novaComanda = new Comanda
             {
 
@@ -85,13 +85,10 @@ namespace Comandas.Api.Controllers
                     _context.PedidoCozinhaItens.Add(pedidoItem);
                 }
 
-                novaComanda.Itens = comandaItens;
-                _context.Comandas.Add(novaComanda);
-                _context.SaveChanges();
-
-
-               
             }
+            novaComanda.Itens = comandaItens;
+            _context.Comandas.Add(novaComanda);
+            _context.SaveChanges();
             var response = new ComandaCreateResponse
             {
                 Id = novaComanda.Id,
@@ -125,11 +122,54 @@ namespace Comandas.Api.Controllers
                 // atualiza as infomações da comanda
                 comanda.NomeCliente = comandaUpdate.NomeCliente;
                 comanda.NumeroMesa = comandaUpdate.NumeroMesa;
-                // retorna 204 sem conteudo
-                return Results.NoContent();
+
+            foreach (var item in comandaUpdate.Itens)
+            {
+                //se Id for informado e o rende for verdadeiro
+                if (item.Id > 0 && item.Remove == true)
+                {
+                    RemoverItemComanda(item.Id);
+
+                    //removendo
+                }    
+                //se o cardaitemid for informado 
+                if(item.CardapioItemId >0)
+                {
+                    IserirItemComanda(comanda, item.CardapioItemId);
+
+                    //inserindo
+                }
+
             }
-            // DELETE api/<ComandaController>/5
-            [HttpDelete("{id}")]
+            _context.SaveChanges();
+            // retorna 204 sem conteudo
+            return Results.NoContent();
+            }
+
+        private void IserirItemComanda(Comanda comanda, int cardapioItemId)
+        {
+            _context.ComandaItens.Add(
+                new ComandaItem
+            {
+                
+                CardapioItemId = cardapioItemId,
+                Comanda = comanda
+                }
+                );
+        }
+
+        private void RemoverItemComanda(int id)
+        {
+            var comandaItem = _context.ComandaItens.FirstOrDefault(ci => ci.Id == id);
+            if (comandaItem is not null)
+            {
+                _context.ComandaItens.Remove(comandaItem);
+            }
+        }
+       
+
+        // DELETE api/<ComandaController>/5
+        [HttpDelete("{id}")]
             public IResult Delete(int id)
             {
                 var comanda = _context.Comandas.FirstOrDefault(u => u.Id == id);

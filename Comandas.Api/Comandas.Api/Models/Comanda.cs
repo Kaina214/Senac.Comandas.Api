@@ -10,7 +10,7 @@ namespace Comandas.Api.Models
         public int Id { get; set; }
         public int NumeroMesa { get; set; }
         public string NomeCliente { get; set; } = default!;
-        public List<ComandaItem> Itens { get; set; } = new List<ComandaItem>();
+        public virtual List<ComandaItem> Itens { get; set; } = new List<ComandaItem>();
         public int SituacaoMesa { get; internal set; }
     }
 }

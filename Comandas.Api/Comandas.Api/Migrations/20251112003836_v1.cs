@@ -2,10 +2,12 @@
 
 #nullable disable
 
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
+
 namespace Comandas.Api.Migrations
 {
     /// <inheritdoc />
-    public partial class versao1 : Migration
+    public partial class v1 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -149,6 +151,31 @@ namespace Comandas.Api.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
+
+            migrationBuilder.InsertData(
+                table: "CardapioItens",
+                columns: new[] { "Id", "Descricao", "PossuiPreparo", "Preco", "Titulo" },
+                values: new object[,]
+                {
+                    { 1, "Coxinha de frango com catupiry", true, 6.50m, "Coxinha" },
+                    { 2, "Uma fatia de Pizza de bacon ", true, 12.50m, "Pizza" },
+                    { 3, "Pastel de frango com catupiry", true, 8.50m, "Pastel" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Mesas",
+                columns: new[] { "Id", "NumeroMesa", "SituacaoMesa" },
+                values: new object[,]
+                {
+                    { 1, 1, 0 },
+                    { 2, 2, 0 },
+                    { 3, 3, 0 }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Usuarios",
+                columns: new[] { "Id", "Email", "Nome", "Senha" },
+                values: new object[] { 1, "adimin@admin.com", "Admin", "admin123" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_ComandaItens_ComandaId",

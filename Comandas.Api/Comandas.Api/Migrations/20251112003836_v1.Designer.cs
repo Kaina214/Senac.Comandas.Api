@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Comandas.Api.Migrations
 {
     [DbContext(typeof(ComandasDbContext))]
-    [Migration("20251106230717_mesas_e_cardapios")]
-    partial class mesas_e_cardapios
+    [Migration("20251112003836_v1")]
+    partial class v1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
