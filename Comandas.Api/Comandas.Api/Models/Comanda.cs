@@ -12,5 +12,10 @@ namespace Comandas.Api.Models
         public string NomeCliente { get; set; } = default!;
         public virtual List<ComandaItem> Itens { get; set; } = new List<ComandaItem>();
         public int SituacaoMesa { get; internal set; }
+
+        public static implicit operator Comanda(ComandaItem v)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

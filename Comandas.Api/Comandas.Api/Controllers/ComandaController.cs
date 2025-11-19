@@ -18,8 +18,6 @@ namespace Comandas.Api.Controllers
             _context = context;
         }
 
-
-
         // GET: api/<ComandaController>
         [HttpGet]
         public IResult Get()
@@ -49,7 +47,7 @@ namespace Comandas.Api.Controllers
                 return Results.BadRequest("O nome do cliente deve ter no mínimo 3 caracteres.");
             if (comandaCreate.NumeroMesa <= 0)
                 return Results.BadRequest("O número da mesa nao pode ser zero");
-            var novaComanda = new Comanda
+            var novaComanda = new Models.Comanda // Fully qualify the type to avoid conflict with the namespace
             {
 
                 NomeCliente = comandaCreate.NomeCliente,
@@ -106,22 +104,22 @@ namespace Comandas.Api.Controllers
             return Results.Created($"/api/comanda/{response.Id}", response);
         }
         // PUT api/<ComandaController>/5
-            [HttpPut("{id}")]
-            public IResult Put(int id, [FromBody] ComandaUpdateRequest comandaUpdate)
-            {
-                //pesquisa uma comanda na lista de comandas pelo id da comanda que veio no parametro de registro
-                var comanda = _context.Comandas.FirstOrDefault(u => u.Id == id);
-                if (comanda is null) // se não encontrou a comanda pesquisada
-                    return Results.NotFound("Comanda nao encontrada");
-                // valida os dados da comanda
-                if (comandaUpdate.NomeCliente.Length < 3)
-                    return Results.BadRequest("O nome deve ter no minimo 3 caracteres");
-                // valida os numero da mesa
-                if (comandaUpdate.NumeroMesa <= 0)
-                    return Results.BadRequest("O numero da mesa deve ser maior que zero");
-                // atualiza as infomações da comanda
-                comanda.NomeCliente = comandaUpdate.NomeCliente;
-                comanda.NumeroMesa = comandaUpdate.NumeroMesa;
+        [HttpPut("{id}")]
+        public IResult Put(int id, [FromBody] ComandaUpdateRequest comandaUpdate)
+        {
+            //pesquisa uma comanda na lista de comandas pelo id da comanda que veio no parametro de registro
+            var comanda = _context.Comandas.FirstOrDefault(u => u.Id == id);
+            if (comanda is null) // se não encontrou a comanda pesquisada
+                return Results.NotFound("Comanda nao encontrada");
+            // valida os dados da comanda
+            if (comandaUpdate.NomeCliente.Length < 3)
+                return Results.BadRequest("O nome deve ter no minimo 3 caracteres");
+            // valida os numero da mesa
+            if (comandaUpdate.NumeroMesa <= 0)
+                return Results.BadRequest("O numero da mesa deve ser maior que zero");
+            // atualiza as infomações da comanda
+            comanda.NomeCliente = comandaUpdate.NomeCliente;
+            comanda.NumeroMesa = comandaUpdate.NumeroMesa;
 
             foreach (var item in comandaUpdate.Itens)
             {
@@ -131,9 +129,9 @@ namespace Comandas.Api.Controllers
                     RemoverItemComanda(item.Id);
 
                     //removendo
-                }    
+                }
                 //se o cardaitemid for informado 
-                if(item.CardapioItemId >0)
+                if (item.CardapioItemId > 0)
                 {
                     IserirItemComanda(comanda, item.CardapioItemId);
 
@@ -144,18 +142,28 @@ namespace Comandas.Api.Controllers
             _context.SaveChanges();
             // retorna 204 sem conteudo
             return Results.NoContent();
-            }
+        }
 
-        private void IserirItemComanda(Comanda comanda, int cardapioItemId)
+        private void IserirItemComanda(Models.Comanda comanda, int cardapioItemId)
         {
-            _context.ComandaItens.Add(
+            _ = _context.ComandaItens.Add(
                 new ComandaItem
-            {
-                
-                CardapioItemId = cardapioItemId,
-                Comanda = comanda
+                {
+                    CardapioItemId = cardapioItemId,
+                    Comanda = comanda // Fix: Ensure the correct type is assigned here
                 }
-                );
+            );
+        }
+
+        private void IserirItemComanda(ComandaItem comanda, int cardapioItemId)
+        {
+            _ = _context.ComandaItens.Add(
+                new ComandaItem
+                {
+                    CardapioItemId = cardapioItemId,
+                    Comanda = comanda
+                }
+            );
         }
 
         private void RemoverItemComanda(int id)
@@ -166,26 +174,26 @@ namespace Comandas.Api.Controllers
                 _context.ComandaItens.Remove(comandaItem);
             }
         }
-       
+
 
         // DELETE api/<ComandaController>/5
         [HttpDelete("{id}")]
-            public IResult Delete(int id)
+        public IResult Delete(int id)
+        {
+            var comanda = _context.Comandas.FirstOrDefault(u => u.Id == id);
+            if (comanda is null)
+                return Results.NotFound("Comanda nao encontrada");
+
+            var removidoComSucessoComanda = _context.Comandas.Remove(comanda);
+
+            _context.Comandas.Remove(comanda);
+            var removido = _context.SaveChanges();
+            if (removido > 0)
             {
-                var comanda = _context.Comandas.FirstOrDefault(u => u.Id == id);
-                if (comanda is null)
-                    return Results.NotFound("Comanda nao encontrada");
-
-                var removidoComSucessoComanda = _context.Comandas.Remove(comanda);
-
-                _context.Comandas.Remove(comanda);
-                var removido = _context.SaveChanges();
-                if (removido > 0)
-                {
-                    return Results.NoContent();
-                }
-                return Results.StatusCode(500);
+                return Results.NoContent();
             }
-        
+            return Results.StatusCode(500);
+        }
+
     }
 }

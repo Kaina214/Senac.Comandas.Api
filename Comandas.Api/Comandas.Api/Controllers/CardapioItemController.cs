@@ -53,7 +53,8 @@ namespace Comandas.Api.Controllers
                 Titulo = cardapio.Titulo,
                 Descricao = cardapio.Descricao,
                 Preco = cardapio.Preco,
-                PossuiPreparo = cardapio.PossuiPreparo
+                PossuiPreparo = cardapio.PossuiPreparo,
+                CategoriaCardapioId = cardapio.CategoriaCardapioId
             };
 
             _context.CardapioItens.Add(cardapioItem); // Ensure this is inside the method body
