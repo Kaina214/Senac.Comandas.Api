@@ -11,6 +11,6 @@ namespace Comandas.Api.Models
 
         public string? Descricao { get; set; }
 
-        public ICollection<CardapioItem>? Itens { get; set; }
+        
     }
 }

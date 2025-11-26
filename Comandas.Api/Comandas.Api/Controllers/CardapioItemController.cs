@@ -1,6 +1,7 @@
 ﻿using Comandas.Api.DTOs;
 using Comandas.Api.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -28,7 +29,9 @@ namespace Comandas.Api.Controllers
         [HttpGet("{id}")]
         public IResult Get(int id)
         {
-            var cardapio = _context.CardapioItens.  
+            var cardapio = _context.
+                CardapioItens
+                .Include(ci => ci.CategoriaCardapio).
                 FirstOrDefault(c => c.Id == id);
             if (cardapio is null)
             {
@@ -47,6 +50,15 @@ namespace Comandas.Api.Controllers
             if (cardapio.Preco <= 0)
                 return Results.BadRequest("O preço deve ser maior que zero.");
 
+
+            if(cardapio.CategoriaCardapioId.HasValue)
+            {
+                var categoria = _context.CategoriaCardapios.
+                    FirstOrDefault(c => c.Id == cardapio.CategoriaCardapioId.Value);
+                if(categoria is null)
+                    return Results.BadRequest("Categoria de cardápio inválida.");
+
+            }
             var cardapioItem = new CardapioItem
             {
               
@@ -67,22 +79,36 @@ namespace Comandas.Api.Controllers
         }
 
         [HttpPut("{id}")]
-        public IResult Put(int id, [FromBody] CardapioItemUpdateRequest cardapio)//put atualiza
+        public IResult Put(int id, [FromBody] CardapioItemUpdateRequest cardapio)
         {
-            var cardapioItem = _context.CardapioItens.
-                FirstOrDefault(c => c.Id == id);
+            var cardapioItem = _context.CardapioItens.FirstOrDefault(c => c.Id == id);
+
             if (cardapioItem is null)
                 return Results.NotFound($"Cardápio {id} não encontrado!");
+
+            // se categoria informada
+            if (cardapio.CategoriaCardapioId.HasValue)
+            {
+                // corrigir o tipo de _context.CategoriaCardapio para DbSet<CategoriaCardapio>
+                var categoria = _context.CategoriaCardapios // Corrigido para CategoriaCardapios
+                    .FirstOrDefault(c => c.Id == cardapio.CategoriaCardapioId);
+
+                // se o retorno da consulta retornou nulo
+                if (categoria is null)
+                    return Results.BadRequest("Categoria de cardápio inválida.");
+            }
 
             cardapioItem.Titulo = cardapio.Titulo;
             cardapioItem.Descricao = cardapio.Descricao;
             cardapioItem.Preco = cardapio.Preco;
             cardapioItem.PossuiPreparo = cardapio.PossuiPreparo;
+            cardapioItem.CategoriaCardapioId = cardapio.CategoriaCardapioId;
 
             _context.SaveChanges();
+
             return Results.NoContent();
         }
-       
+
 
         [HttpDelete("{id}")]
         public IResult Delete(int id)
