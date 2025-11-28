@@ -1,6 +1,8 @@
 ﻿using Comandas.Api.DTOs;
 using Comandas.Api.Models;
+
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -17,7 +19,7 @@ namespace Comandas.Api.Controllers
         {
             _context = context;
         }
-    
+
         //iresult que retorna  a lista de usuarios
         // GET: api/<UsuarioController>
         [HttpGet]
@@ -46,11 +48,11 @@ namespace Comandas.Api.Controllers
         [HttpPost]
         public IResult Post([FromBody] UsuarioCreateRequest usuarioCreate)
         {
-            if (usuarioCreate.Senha.Length <6  )
+            if (usuarioCreate.Senha.Length < 6)
             {
                 return Results.BadRequest("A senha deve ter no minínimo 6 caracteres ");
             }
-            if (usuarioCreate.Nome.Length <3) 
+            if (usuarioCreate.Nome.Length < 3)
             {
                 return Results.Conflict("O nome deve ter no minínimo 3 caracteres ");
             }
@@ -58,13 +60,17 @@ namespace Comandas.Api.Controllers
             {
                 return Results.Conflict("O email deve ser válido ");
             }
-
-
+            var emailExistente = _context.Usuarios
+                .FirstOrDefault(u => u.Email == usuarioCreate.Email);
+            if(emailExistente is not null)
+            {
+                return Results.BadRequest("O email já está em uso ");
+            }
 
             //cria um novo usuario
             var usuario = new Usuario
             {
-            
+
                 Nome = usuarioCreate.Nome,
                 Email = usuarioCreate.Email,
                 Senha = usuarioCreate.Senha
@@ -120,8 +126,24 @@ namespace Comandas.Api.Controllers
             {
                 return Results.NoContent();
             }
-           return Results.StatusCode(500);
+            return Results.StatusCode(500);
 
+
+        }
+        //criar metodo de login aqui
+        [HttpPost("login")]
+
+        public IResult Login([FromBody] LoginRequest loginRequest)
+
+        {
+            var usuario = _context.Usuarios.
+                FirstOrDefault(u =>
+                u.Email == loginRequest.email
+                && u.Senha == loginRequest.senha);
+            if (usuario is null)
+                return Results.Unauthorized();
+
+            return Results.Ok("Usuário autenticado");
 
         }
     }
