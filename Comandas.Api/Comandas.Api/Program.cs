@@ -14,9 +14,17 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-//if (app.Environment.IsDevelopment())
-//{
+//criar o banco de dados automaticamente
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<ComandasDbContext>();
+    //execute as migrations no banco de dados
+    await db.Database.MigrateAsync();
+}
+
+    // Configure the HTTP request pipeline.
+    //if (app.Environment.IsDevelopment())
+    //{
     app.UseSwagger();
     app.UseSwaggerUI();
 //}
