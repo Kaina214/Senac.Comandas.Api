@@ -6,12 +6,10 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Comanda.Api;
-using Comanda.Api.Models;
 using Comandas.Api.Models;
 using Comandas.Api;
 
-namespace Comanda.Api.Controllers
+namespace Comandas.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
